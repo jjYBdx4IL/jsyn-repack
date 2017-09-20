@@ -71,16 +71,29 @@
                 </executions>
                 <configuration>
                     <tasks>
-                        <move todir="${project.build.directory}/generated-sources/mainjava">
+                        <copy todir="${project.build.directory}/generated-sources/mainjava">
                             <fileset dir="${project.build.directory}/jsyn-${jsyn.git.rev}/src" />
-                        </move>
-                        <move todir="${project.build.directory}/generated-sources/testjava">
-                            <fileset dir="${project.build.directory}/jsyn-${jsyn.git.rev}/tests" />
-                        </move>
+                        </copy>
+                        <!-- hack to make mainClass execution work within eclipse
+                        (eclipse is too stupid to include test scope when running a main class from test folders) -->
+                        <copy todir="${project.build.directory}/generated-sources/mainjava">
+                            <fileset dir="${project.build.directory}/jsyn-${jsyn.git.rev}/tests">
+                                <exclude name="**/Test*" />
+                                <not>
+                                    <contains text="junit.framework." />
+                                </not>
+                            </fileset>
+                        </copy>
+                        <copy todir="${project.build.directory}/generated-sources/testjava">
+                            <fileset dir="${project.build.directory}/jsyn-${jsyn.git.rev}/tests">
+                                <include name="**/Test*" />
+                                <contains text="junit.framework." />
+                            </fileset>
+                        </copy>
                     </tasks>
                 </configuration>
             </plugin>
-            
+
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
